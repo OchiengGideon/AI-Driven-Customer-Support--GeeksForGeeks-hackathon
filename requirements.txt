@@ -1,0 +1,32 @@
+# Core Dependencies
+flask
+python-dotenv
+sqlalchemy
+
+# LLM & AI Components
+ollama
+langchain
+langchain-core
+langchain-community
+langchain-ollama
+langchain_text_splitters
+
+# Vector/Embedding Management
+chromadb
+fastembed
+sentence-transformers
+
+# Document Processing
+pdfplumber
+pikepdf
+unstructured[all-docs]
+
+# Audio & Multimedia
+elevenlabs
+
+# Support Libraries
+numpy
+pandas
+requests
+uvicorn
+python-magic-bin
