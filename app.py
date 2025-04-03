@@ -17,8 +17,8 @@ resolution_agent = RecommendationAgent(llm)
 routing_agent = RoutingAgent(llm)
 
 # Setting up templates and static files
-app.mount("/static", StaticFiles(directory="web_app/static"), name="static")
-templates = Jinja2Templates(directory="web_app/templates")
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
 
 @app.get("/")
 def home(request: Request):
