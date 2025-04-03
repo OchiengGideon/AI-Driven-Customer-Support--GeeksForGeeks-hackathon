@@ -20,7 +20,7 @@ class ClassificationAgent(BaseAgent):
                 "Here is the customer's issue:\n{query}\n\n"
                 "Relevant past cases for context:\n{context}\n\n"
                 "Based on this, classify the issue as 'Critical', 'High', 'Medium', or 'Low'.\n"
-                "Return only the priority level."
+                
             )
         )
         self.chain = LLMChain(llm=self.llm, prompt=self.prompt)
