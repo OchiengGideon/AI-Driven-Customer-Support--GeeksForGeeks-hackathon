@@ -18,10 +18,19 @@ class RecommendationAgent(BaseAgent):
         self.prompt = PromptTemplate(
             input_variables=["query", "context"],
             template=(
-                "Based on past resolved issues, generate a response for this query:\n\n"
-                "Query: {query}\n\n"
-                "\n{context}\n\n"
-                "Provide a clear and concise resolution."
+                "Respond to this user query as a friendly support assistant. Use direct speech and simple markdown formatting.\n\n"
+                "**Structure your response like this:**\n"
+                "💬 Hello! [Brief friendly greeting]\n\n"
+                "[Explain your understanding of their problem in 1-2 sentences]\n\n"
+                "🛠️ **Step-by-Step Solution:**\n"
+                "1. [First step in clear language]\n"
+                "2. [Second step if needed]\n"
+                "3. [Additional steps as required]\n\n"
+                "💡 **Pro Tip:** [Optional helpful tip or note]\n\n"
+                "Let me know if you need more help with this!\"\n\n"
+                "User Query: {query}\n\n"
+                "Relevant Context:\n{context}\n\n"
+                "Maintain a warm, professional tone and use **bold** for section headers."
             )
         )
         self.chain = LLMChain(llm=self.llm, prompt=self.prompt)

@@ -1,47 +1,130 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Support System</title>
+    <title>AI-Driven Customer Support</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>AI Support Assistant</h1>
-        <textarea id="query" placeholder="Describe your issue..."></textarea>
-        <button onclick="submitQuery()">Submit</button>
-        <div id="response" class="response"></div>
-    </div>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">AI Support</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#support">Support</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
     
+    <!-- Hero Section -->
+    <header class="bg-primary text-white text-center py-5">
+        <div class="container">
+            <h1>AI-Driven Customer Support</h1>
+            <p>Seamless AI-powered assistance for enhanced customer experience.</p>
+        </div>
+    </header>
+    
+    <!-- Support Form Section -->
+    <section id="support" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center">Get AI Assistance</h2>
+            <form id="supportForm" class="mt-4" onsubmit="return submitQuery(event)">
+                <div class="mb-3">
+                    <label for="query" class="form-label">Enter Your Customer Query</label>
+                    <textarea class="form-control" id="query" rows="4" 
+                              placeholder="Describe your issue..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                    <span class="submit-text">Analyze & Get AI Response</span>
+                    <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                </button>
+            </form>
+        </div>
+    </section>
+    
+    <!-- Results Section -->
+    <section id="responseSection" class="py-5 d-none">
+        <div class="container">
+            <h2 class="text-center mb-4">AI Response</h2>
+            <div id="responseDiv" class="response"></div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3">
+        <p>&copy; 2025 AI-Driven Customer Support. All rights reserved.</p>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        async function submitQuery() {
-            const query = document.getElementById("query").value;
-            const responseDiv = document.getElementById("response");
+        async function submitQuery(event) {
+            event.preventDefault();
+            const form = event.target;
+            const button = form.querySelector('button[type="submit"]');
+            const submitText = button.querySelector('.submit-text');
+            const spinner = button.querySelector('.spinner-border');
+            const query = document.getElementById('query').value.trim();
+            const responseDiv = document.getElementById('responseDiv');
+            const responseSection = document.getElementById('responseSection');
+
+            // Show loading state
+            submitText.classList.add('d-none');
+            spinner.classList.remove('d-none');
+            button.disabled = true;
             
-            if (!query.trim()) {
-                responseDiv.innerHTML = "<p class='error'>Please enter a query.</p>";
-                return;
-            }
-            
-            responseDiv.innerHTML = "<p>Processing...</p>";
-            
+            // Show response section
+            responseSection.classList.remove('d-none');
+            responseDiv.innerHTML = '';
+
             try {
-                const response = await fetch("/process_query", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                if (!query) {
+                    throw new Error('Please enter a query');
+                }
+
+                const response = await fetch('/process_query', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ query })
                 });
-                
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
                 const data = await response.json();
+                
                 responseDiv.innerHTML = `
-                    <h2>Response</h2>
-                    <p><strong>Summary:</strong> ${data.summary}</p>
-                    <p><strong>Category:</strong> ${data.category}</p>
-                    <p><strong>Resolution:</strong> ${data.resolution}</p>
-                    <p><strong>Department:</strong> ${data.department}</p>
+                    <div class="card border-success">
+                        <div class="card-body text-success">
+                            <h5 class="card-title">AI Analysis Result</h5>
+                            <p><strong>Summary:</strong> ${data.summary}</p>
+                            <p><strong>Category:</strong> ${data.category}</p>
+                            <p><strong>Resolution:</strong> ${data.resolution}</p>
+                            <p><strong>Department:</strong> ${data.department}</p>
+                        </div>
+                    </div>
                 `;
             } catch (error) {
-                responseDiv.innerHTML = "<p class='error'>Error processing request.</p>";
+                console.error('Error:', error);
+                responseDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        ${error.message || 'Error processing request. Please try again.'}
+                    </div>
+                `;
+            } finally {
+                // Reset button state
+                submitText.classList.remove('d-none');
+                spinner.classList.add('d-none');
+                button.disabled = false;
             }
         }
     </script>
