@@ -1,0 +1,49 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Support System</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>AI Support Assistant</h1>
+        <textarea id="query" placeholder="Describe your issue..."></textarea>
+        <button onclick="submitQuery()">Submit</button>
+        <div id="response" class="response"></div>
+    </div>
+    
+    <script>
+        async function submitQuery() {
+            const query = document.getElementById("query").value;
+            const responseDiv = document.getElementById("response");
+            
+            if (!query.trim()) {
+                responseDiv.innerHTML = "<p class='error'>Please enter a query.</p>";
+                return;
+            }
+            
+            responseDiv.innerHTML = "<p>Processing...</p>";
+            
+            try {
+                const response = await fetch("/process_query", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ query })
+                });
+                
+                const data = await response.json();
+                responseDiv.innerHTML = `
+                    <h2>Response</h2>
+                    <p><strong>Summary:</strong> ${data.summary}</p>
+                    <p><strong>Category:</strong> ${data.category}</p>
+                    <p><strong>Resolution:</strong> ${data.resolution}</p>
+                    <p><strong>Department:</strong> ${data.department}</p>
+                `;
+            } catch (error) {
+                responseDiv.innerHTML = "<p class='error'>Error processing request.</p>";
+            }
+        }
+    </script>
+</body>
+</html>
