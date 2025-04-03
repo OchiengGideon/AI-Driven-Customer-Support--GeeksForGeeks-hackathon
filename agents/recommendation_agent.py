@@ -3,7 +3,7 @@ from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain_community.llms import Ollama
 from vector_store import VectorStore
-from agents.routing_agent import RoutingAgent  # Import RoutingAgent
+from agents.routing_agent import RoutingAgent  
 
 class RecommendationAgent(BaseAgent):
     """
@@ -13,8 +13,8 @@ class RecommendationAgent(BaseAgent):
 
     def __init__(self, llm):
         super().__init__(llm)
-        self.vector_store = VectorStore()  # Load vector store
-        self.routing_agent = RoutingAgent(llm)  # Initialize RoutingAgent
+        self.vector_store = VectorStore() 
+        self.routing_agent = RoutingAgent(llm)  
         self.prompt = PromptTemplate(
             input_variables=["query", "context"],
             template=(
@@ -42,7 +42,7 @@ class RecommendationAgent(BaseAgent):
         similar_cases = self.vector_store.query_similar(query)
 
         if similar_cases:
-            # Use retrieved cases as context
+            # Using retrieved cases as context
             context = "\n".join(
                   case["text"] if isinstance(case, dict) and "text" in case else str(case)
                   for case in similar_cases
@@ -50,5 +50,5 @@ class RecommendationAgent(BaseAgent):
 
             return self.chain.run({"query": query, "context": context})
         else:
-            # No past cases found → Activate RoutingAgent
+            #  Activating RoutingAgent if No past cases foundm
             return f"No past cases found. Assigned to: {self.routing_agent.process(query)}"

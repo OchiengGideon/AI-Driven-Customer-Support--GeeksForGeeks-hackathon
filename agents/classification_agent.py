@@ -11,7 +11,8 @@ class ClassificationAgent(BaseAgent):
 
     def __init__(self, llm):
         super().__init__(llm)
-        self.vector_store = VectorStore()  # Initialize Vector Store
+        # Initializing Vector Store
+        self.vector_store = VectorStore()  
 
         self.prompt = PromptTemplate(
             input_variables=["query", "context"],
@@ -29,9 +30,8 @@ class ClassificationAgent(BaseAgent):
         """Retrieves similar cases and classifies the issue."""
         similar_cases = self.vector_store.query_similar(query)
 
-        # Format retrieved cases as context or use "No relevant cases found"
+        # Formating retrieved cases as context or use "No relevant cases found"
         context = "\n".join(case["text"] if isinstance(case, dict) and "text" in case else str(case) for case in similar_cases) if similar_cases else "No relevant cases found."
 
-        # Generate classification using retrieved context
         priority = self.chain.run({"query": query, "context": context})
         return priority.strip()

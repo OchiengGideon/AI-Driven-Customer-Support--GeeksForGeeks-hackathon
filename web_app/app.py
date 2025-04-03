@@ -10,13 +10,13 @@ from fastapi.staticfiles import StaticFiles
 app = FastAPI()
 llm = Ollama(model="llama3.2")
 
-# Initialize agents
+# Initializing agents
 summary_agent = SummaryAgent(llm)
 classification_agent = ClassificationAgent(llm)
 resolution_agent = RecommendationAgent(llm)
 routing_agent = RoutingAgent(llm)
 
-# Set up templates and static files
+# Setting up templates and static files
 app.mount("/static", StaticFiles(directory="web_app/static"), name="static")
 templates = Jinja2Templates(directory="web_app/templates")
 
@@ -33,18 +33,10 @@ async def process_query(request: Request):
     if not query:
         raise HTTPException(status_code=400, detail="Query text is required")
 
-    print(f"Received query: {query}")  # Debugging log
-
-    # Step 1: Summarize the issue
+    print(f"Received query: {query}") 
     summary = summary_agent.process(query)
-
-    # Step 2: Classify the issue
     category = classification_agent.process(summary)
-
-    # Step 3: Attempt automated resolution
     resolution = resolution_agent.process(summary)
-
-    # Step 4: Route only if no clear resolution exists
     if "No automated solution found" in resolution:
         department = routing_agent.process(summary)
     else:
