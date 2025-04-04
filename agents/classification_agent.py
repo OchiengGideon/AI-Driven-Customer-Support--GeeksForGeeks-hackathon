@@ -11,8 +11,7 @@ class ClassificationAgent(BaseAgent):
 
     def __init__(self, llm):
         super().__init__(llm)
-        # Initializing Vector Store
-        self.vector_store = VectorStore()  
+        self.vector_store = VectorStore() 
 
         self.prompt = PromptTemplate(
             input_variables=["query", "context"],
@@ -21,7 +20,7 @@ class ClassificationAgent(BaseAgent):
                 "Here is the customer's issue:\n{query}\n\n"
                 "Relevant past cases for context:\n{context}\n\n"
                 "Based on this, classify the issue as 'Critical', 'High', 'Medium', or 'Low'.\n"
-                
+                "Return only the priority level."
             )
         )
         self.chain = LLMChain(llm=self.llm, prompt=self.prompt)
@@ -30,8 +29,9 @@ class ClassificationAgent(BaseAgent):
         """Retrieves similar cases and classifies the issue."""
         similar_cases = self.vector_store.query_similar(query)
 
-        # Formating retrieved cases as context or use "No relevant cases found"
+       
         context = "\n".join(case["text"] if isinstance(case, dict) and "text" in case else str(case) for case in similar_cases) if similar_cases else "No relevant cases found."
 
+    
         priority = self.chain.run({"query": query, "context": context})
         return priority.strip()
